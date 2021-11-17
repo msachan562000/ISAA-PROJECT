@@ -1,0 +1,94 @@
+<%- include("partials/header") %>
+<link href='https://fonts.googleapis.com/css?family=Andada Pro' rel='stylesheet'>
+
+<body>
+
+
+
+  <style>
+    /* body {
+    background-color: black;
+    color: white;
+  } */
+
+    th,
+    td {
+      text-align: center;
+    }
+
+    body {
+      background-image: url("https://coolbackgrounds.io/images/backgrounds/index/compute-ea4c57a4.png");
+      height: 100vh;
+      /* font-family: Anada Pro; */
+      color: white;
+    }
+
+    table,
+    td,
+    tr,
+    tr {
+      border-color: white;
+    }
+
+    /* Height for devices larger than 576px */
+    @media (min-width: 992px) {
+      #intro {
+        margin-top: -58.59px;
+      }
+    }
+
+    .navbar .nav-link {
+      color: #fff !important;
+    }
+  </style>
+
+
+
+
+  <div class="container">
+    <div class="form-header">
+      <br>
+      <center>
+        <h1 style="font-family:Andada Pro" ;><b><u>Our Valuable Customers</u></b></h1>
+      </center>
+    </div>
+
+
+
+
+    <div style="margin:5%;">
+
+      <table border="2" width="1000px" cellpadding="10" align="center" cellspacing="0" text-align="center" border-radius="5px">
+        <tr>
+          <th>First Number</th>
+          <th>Last Name</th>
+          <th>Age</th>
+          <th>Email ID</th>
+          <th>Account Number</th>
+          <th>IFSC Code</th>
+          <th>Available Balance</th>
+
+
+        </tr>
+        <%Bank.forEach(function(customer){%>
+        <tr>
+          <td style="height:30px;"><%=customer.firstname%></td>
+          <td><%=customer.lastname%></td>
+
+          <td><%=customer.age%></td>
+          <td><%=customer.email%></td>
+          <td><%=customer.accountnumber%></td>
+          <td><%=customer.ifsccode%></td>
+          <td><%=customer.amount%></td>
+
+        </tr>
+        <%});%>
+      </table><br>
+      <center> <a href="/sendmoney"><button type="button" class="btn btn-primary">Send Money</button></a>
+        <center>
+    </div>
+
+  </div>
+</body>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<%- include("partials/header") %>
+<link href='https://fonts.googleapis.com/css?family=Andada Pro' rel='stylesheet'>
+
+<body>
+<a href="/logout">logout</a>
+
+
+  <style>
+    /* body {
+    background-color: black;
+    color: white;
+  } */
+
+    th,
+    td {
+      text-align: center;
+    }
+
+    body {
+      background-color: black;
+      height: 100vh;
+      /* font-family: Anada Pro; */
+      color: white;
+    }
+
+    table,
+    td,
+    tr,
+    tr {
+      border-color: white;
+    }
+
+    /* Height for devices larger than 576px */
+    @media (min-width: 992px) {
+      #intro {
+        margin-top: -58.59px;
+      }
+    }
+
+    .navbar .nav-link {
+      color: #fff !important;
+    }
+  </style>
+
+
+
+
+  <div class="container">
+    <div class="form-header">
+      <br>
+      <center>
+        <h1 style="font-family:Andada Pro" ;><b><u>Transaction History</u></b></h1>
+      </center>
+    </div>
+
+
+
+
+    <div style="margin:5%;">
+      <%var i=0;%>
+      <table border="2" width="1000px" cellpadding="10" align="center" cellspacing="0" text-align="center" border-radius="5px">
+        <tr>
+          <th>Sr. No.</th>
+          <th>From Account</th>
+          <th>To Account</th>
+          <th>Remarks</th>
+          <th>Amount</th>
+        </tr>
+
+        <%Transaction.forEach(function(trans){%>
+
+        <%i=i+1;%>
+        <tr>
+          <td><%=i%>.</td>
+          <td style="height:30px;"><%=trans.from%> </td>
+          <td><%=trans.to%></td>
+
+          <td><%=trans.remarks%></td>
+          <td><%=trans.amount%></td>
+
+
+        </tr>
+        <%});%>
+
+
+      </table><br>
+      <center> <a href="/sendmoney"><button type="button" class="btn btn-primary">Send Money</button></a>
+        <center>
+    </div>
+
+  </div>
+</body>
+
+<%- include("partials/footer") %>
