@@ -51,7 +51,10 @@ const Bank = mongoose.model("Bank", bankSchema);
 
 app.use(passport.initialize());
 app.use(passport.session());
- 
+app.use(function(req,res,next){
+  res.locals.currentUser = req.user;
+  next();
+})
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -107,7 +110,17 @@ app.get("/transactions", isLoggedIn, function (req, res) {
   });
 });
 app.get("/connecttophone",isLoggedIn ,function(req,res){
-  res.render("connecttophone");
+var username=req.params.username;
+var password=req.params.password;
+var url=username+"password:"+password;
+qr.toDataURL(url, (err, src) => {
+  if (err) res.send("Error occured");
+
+  // Let us return the QR code image as our response and set it to be the source used in the webpage
+  res.render("connecttophone", { src });
+
+  // res.render("connecttophone");
+});
 });
 
 app.get("/", function(req, res) {
@@ -125,6 +138,17 @@ res.render("home");
 });
 
 //qr code generator
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+
 app.post("/connecttophone", (req, res) => {
   const url = req.body.url;
 
@@ -271,3 +295,4 @@ if (port == null || port == "") {
 app.listen(port || 3000, function() {
   console.log("server is on port 3000");
 });
+
