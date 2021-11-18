@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+  <%- include("partials/header") %>
 <head>
 <meta charset="utf-8">
 <title>Log-In</title>
@@ -26,13 +27,13 @@ font-size: 3.5rem;
 <!-- Import and configure the Firebase SDK -->
 <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
 <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-<script src="/__/firebase/8.7.1/firebase-app.js"></script>
+<!-- <script src="/__/firebase/8.7.1/firebase-app.js"></script>
 <script src="/__/firebase/8.7.1/firebase-auth.js"></script>
-<script src="/__/firebase/init.js"></script>
+<script src="/__/firebase/init.js"></script> -->
 
-<script type="text/javascript">
+<!-- <script type="text/javascript"> -->
 
-  /**
+  <!-- /**
    * Function called when clicking the Login/Logout button.
 //    */
 //   function toggleSignIn() {
@@ -102,11 +103,12 @@ font-size: 3.5rem;
 
 //   window.onload = function() {
 //     initApp();
-//   };
-// </script>
+//   }; -->
+ <!-- </script> -->
 </head>
-<header>
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+<!-- <header> -->
+  
+<!-- <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 <div class="container-fluid">
 <a href="#" style="color:inherit;padding:0px 0px 0px 10px;"<span><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnpoyZQoTHRH3y1g4_0jrYQ-HsEaQCahK7OruS8KD_4--HYizvFhMyuioFi5-bKzbGS4U&usqp=CAU" style="width:45px; padding-right: 10px;float:left;"></img></span>
 <a class="navbar-brand" href="/" style="font-size:18px;font-family: 'helvetica neue';padding:15px;margin:0px 10px 0px -15px;">Indian Railways</a>
@@ -134,18 +136,18 @@ font-size: 3.5rem;
     <a class="nav-link" href="/signup1">Sign Up</a>
   </li></ul>
 </div></div>
-</nav>
-</header>
+</nav> -->
+<!-- </header> -->
 <body class="text-center">
 <form action="/signin"class="form-signin" method="post" >
-<img class="mb-4" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnpoyZQoTHRH3y1g4_0jrYQ-HsEaQCahK7OruS8KD_4--HYizvFhMyuioFi5-bKzbGS4U&usqp=CAU" alt="" width="72" height="72">
+<img class="mb-4" src="https://www.pngitem.com/pimgs/m/20-200990_letter-f-download-png-image-freedom-youtube-partnership.png" alt="" width="85" height="72" style="border-radius: 20%;">
 <h1 class="h3 mb-3 font-weight-normal" style="color:white">Log-In</h1>
 <input type="text" name="username" id="username" class="form-control top" placeholder="User-Id/Phone Number"  autofocus>
 <input type="password" name="password"id="pass" class="form-control middle" placeholder="Password">
 <br>
 <button class="btn btn-lg btn-primary btn-block"style="font-size:17.5px;" type="submit" >Log Me In</button><br><br>
 <a href="/signup"><button class="btn btn-lg btn-primary btn-block"id="signup" style="background-color:green;font-size:17.5px;" type="button"> Not a Member Yet!! Sign UP</button></a>
-<p class="mt-5 mb-3 text-muted">&copy;Indian Railways </p>
+<p class="mt-5 mb-3 text-muted">&copy;Financorp </p>
 </form>
 </body>
 </html>

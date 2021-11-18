@@ -3,15 +3,16 @@ body {
   height: 100%;
 
 }
-header{
-  font-size: 14px;
+/* header{
+  font-size: 15px;
   font-family: 'helvetica neue';
-  padding: 15px 5px;
-}
+  padding: 0px 15px;
+
+} */
 
 body {
-  display: -ms-flexbox;
-  display: flex;
+  /* display: -ms-flexbox; */
+  /* display: flex; */
   -ms-flex-align: center;
   /* align-items: center; */
   margin: auto;
