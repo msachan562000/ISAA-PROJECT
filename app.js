@@ -64,9 +64,13 @@ app.get("/signup", function(req, res) {
 });
 
 app.post("/signup", function(req, res) {
-  var username = req.body.username
-  var password = req.body.password
-  User.register(new User({ username: username }),
+  var username = req.body.uid
+  var password = req.body.pass
+  var fname=req.body.fname
+  var lname=req.body.lname
+  var phonenumber=req.body.phno
+  var email=req.body.email
+  User.register(new User({ username: username,password:password,fname: fname,lname: lname,phonenumber:phonenumber,email:email }), 
           password, function (err, user) {
       if (err) {
           console.log(err);
@@ -79,9 +83,12 @@ app.post("/signup", function(req, res) {
       });
   });});
 //login routes
-
+var user="a"
+    pass="b"
+    name="c"
 function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) return next();
+  if (req.isAuthenticated())  return next();
+  
   res.redirect("/signin");
 }
 
@@ -94,6 +101,9 @@ app.post("/signin", passport.authenticate("local", {
   successRedirect: "/",
   failureRedirect: "/signup"
 }), function (req, res) {
+  a=req.user.username
+    b=req.user.password
+    c=req.user.fname+req.user.lname
 });
 app.get("/logout", function (req, res) {
   req.logout();
@@ -127,11 +137,12 @@ app.get("/", function(req, res) {
   res.render("index");
 });
 app.get("/customers", function(req, res) {
-  Bank.find({}, function(err, foundcust) {
-    res.render("customers", {
-      Bank: foundcust
-    });
-  })
+  // Bank.find({}, function(err, foundcust) {
+  //   res.render("customers", {
+  //     Bank: foundcust
+  //   });
+  // })
+  res.send(a,b,c);
 });
 app.get("/home",isLoggedIn,function(req, res) {
 res.render("home");
