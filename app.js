@@ -305,11 +305,28 @@ app.post("/sendmoney", function (req, res) {
   res.redirect("/transactions");
 });
 
-let port = process.env.PORT;
-if (port == null || port == "") {
-  port = 3000;
-}
+app.get("/mobile_login", (req, res) => {
+  const { username, password } = req.query;
+  User.findOne(
+    {
+      username: username,
+    },
+    function (err, foundcust) {
+      if (foundcust) {
+        if (foundcust.password === password) {
+          res.status(200).send("login successful");
+        } else {
+          res.status(401).send("login failed");
+        }
+      }
+    }
+  );
+});
 
-app.listen(port || 3000, function () {
+app.post("mobile_complete", (req, res) => {
+  const { username, password, code } = req.body;
+});
+
+app.listen(process.env.PORT || 3000, function () {
   console.log("server is on port 3000");
 });
