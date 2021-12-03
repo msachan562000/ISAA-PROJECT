@@ -16,17 +16,9 @@
   <form class="" action="/sendmoney" method="post">
     <div class="form-group">
       <!-- <center> -->
-      <label for="from">FROM:</label>
-
-      <select class="form-control" name="from" id="from" required>
-        <option value="" selected disabled>From Account</option>
-        <%Bank.forEach(function(customer){%>
-        <option name="<%-customer%>"><%-customer%> </option>
-        <%});%>
-      </select>
+      <label for="from">FROM: <%=currentUser%></label>
       <br>
       <label for="to">TO:</label>
-
       <select class="form-control" name="to" id="to" required>
         <option name="" selected disabled>To Account</option>
         <%Bank.forEach(function(customer){%>

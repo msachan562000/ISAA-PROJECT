@@ -131,25 +131,31 @@ app.get("/logout", function (req, res) {
 });
 
 app.get("/transactions", isLoggedIn, function (req, res) {
-  Transaction.find({}, function (err, foundtrans) {
-    res.render("transactions", {
-      Transaction: foundtrans,
-    });
-  });
+  const usern = req.session.passport.user;
+  Transaction.find(
+    {
+      $or: [{ from: usern }, { to: usern }],
+    },
+    function (err, foundtrans) {
+      res.render("transactions", {
+        Transaction: foundtrans,
+      });
+    }
+  );
 });
-app.get("/connecttophone", isLoggedIn, function (req, res) {
-  var username = req.params.username;
-  var password = req.params.password;
-  var url = username + "password:" + password;
-  qr.toDataURL(url, (err, src) => {
-    if (err) res.send("Error occured");
+// app.get("/connecttophone", isLoggedIn, function (req, res) {
+//   var username = req.params.username;
+//   var password = req.params.password;
+//   var url = username + "password:" + password;
+//   qr.toDataURL(url, (err, src) => {
+//     if (err) res.send("Error occured");
 
-    // Let us return the QR code image as our response and set it to be the source used in the webpage
-    res.render("connecttophone", { src });
+//     // Let us return the QR code image as our response and set it to be the source used in the webpage
+//     res.render("connecttophone", { src });
 
-    // res.render("connecttophone");
-  });
-});
+//     // res.render("connecttophone");
+//   });
+// });
 
 app.get("/", function (req, res) {
   res.render("index");
@@ -178,60 +184,57 @@ app.get("/home", isLoggedIn, function (req, res) {
 //
 //
 
-app.post("/connecttophone", (req, res) => {
-  const url = req.body.url;
-
+app.get("/connecttophone", isLoggedIn, async (req, res) => {
+  var user = await User.findOne({ username: req.session.passport.user });
+  if (!user.paymentInProgress) return res.send("No Active Payment");
   // If the input is null return "Empty Data" error
-  if (url.length === 0) res.send("Empty Data!");
-
   // Let us convert the input stored in the url and return it as a representation of the QR Code image contained in the Data URI(Uniform Resource Identifier)
   // It shall be returned as a png image format
   // In case of an error, it will save the error inside the "err" variable and display it
 
-  qr.toDataURL(url, (err, src) => {
+  qr.toDataURL(user.codeForPayment, (err, src) => {
     if (err) res.send("Error occured");
-
     // Let us return the QR code image as our response and set it to be the source used in the webpage
     res.render("connecttophone", { src });
   });
 });
 
-app.get("/addnewcustomer", function (req, res) {
-  res.render("addnewcustomer");
-});
-app.post("/addnewcustomer", function (req, res) {
-  const fname = _.toUpper(req.body.fname);
-  const lname = _.toUpper(req.body.lname);
-  const age = req.body.age;
-  const ifsc = _.toUpper(req.body.ifsc);
-  const balance = req.body.balance;
-  const email = req.body.email;
-  const account = req.body.account;
+// app.get("/addnewcustomer", function (req, res) {
+//   res.render("addnewcustomer");
+// });
+// app.post("/addnewcustomer", function (req, res) {
+//   const fname = _.toUpper(req.body.fname);
+//   const lname = _.toUpper(req.body.lname);
+//   const age = req.body.age;
+//   const ifsc = _.toUpper(req.body.ifsc);
+//   const balance = req.body.balance;
+//   const email = req.body.email;
+//   const account = req.body.account;
 
-  const customer = new Bank({
-    firstname: fname,
-    lastname: lname,
-    age: age,
-    email: email,
-    accountnumber: account,
-    ifsccode: ifsc,
-    amount: balance,
-  });
-  Bank.findOne(
-    {
-      accountnumber: account,
-    },
-    function (err, foundcust) {
-      if (!foundcust) {
-        customer.save();
-        res.redirect("/");
-      } else {
-        console.log(err);
-      }
-      //res.redirect("/");
-    }
-  );
-});
+//   const customer = new Bank({
+//     firstname: fname,
+//     lastname: lname,
+//     age: age,
+//     email: email,
+//     accountnumber: account,
+//     ifsccode: ifsc,
+//     amount: balance,
+//   });
+//   Bank.findOne(
+//     {
+//       accountnumber: account,
+//     },
+//     function (err, foundcust) {
+//       if (!foundcust) {
+//         customer.save();
+//         res.redirect("/");
+//       } else {
+//         console.log(err);
+//       }
+//       //res.redirect("/");
+//     }
+//   );
+// });
 
 // app.get("/transactions", function(req, res) {
 
@@ -244,31 +247,27 @@ app.post("/addnewcustomer", function (req, res) {
 
 // });
 
-app.get("/sendmoney", function (req, res) {
-  console.log(req.session);
+app.get("/sendmoney", isLoggedIn, function (req, res) {
+  const user = req.session.passport.user;
   User.find({}, function (err, foundcust) {
     res.render("sendmoney", {
-      Bank: foundcust.map((cust) => cust.username),
+      Bank: foundcust.map((cust) => cust.username).filter((cust) => cust !== user),
+      currentUser: user,
     });
   });
 });
 
-app.post("/sendmoney", async function (req, res) {
-  const fromacc = req.body.from;
+app.post("/sendmoney", isLoggedIn, async function (req, res) {
+  const fromacc = req.session.passport.user;
   const toacc = req.body.to;
   const remarksacc = _.toUpper(req.body.remarks);
   const amountacc = req.body.amount;
-  const transaction = new Transaction({
-    from: fromacc,
-    to: toacc,
-    amount: amountacc,
-    remarks: remarksacc,
-  });
-
   const fromUser = await User.findOne({
     username: fromacc,
   });
-  console.log(fromUser);
+  if (fromUser.amount < amountacc) {
+    return res.send("Insufficient Balance");
+  } else if (!req.body.to) return res.send("Select A Recipient");
   fromUser.amountInProgress = amountacc;
   fromUser.usernameInProgress = toacc;
   fromUser.paymentInProgress = true;
@@ -276,40 +275,6 @@ app.post("/sendmoney", async function (req, res) {
   fromUser.remarkInProgress = remarksacc;
   fromUser.save();
   res.redirect("/connecttophone");
-  //   .then((foundcustomer) => {
-  //     const x = foundcustomer.amount;
-
-  //     if (fromacc === toacc) {
-  //       // alert("From and To accounts cannot be same");
-  //       return res.redirect("/sendmoney");
-  //     } else if (amountacc > x || x <= 0) {
-  //       alert(
-  //         "Available Balance in your account is less than the amount being tranferred.Kindy fill your account with sufficient funds."
-  //       );
-  //       res.redirect("/");
-  //     } else {
-  //       transaction.save();
-  //     }
-  //     foundcustomer.amount = x - amountacc;
-  //     foundcustomer.save();
-  //   })
-  //   .catch((e) => {
-  //     res.redirect("/");
-  //   });
-  // Bank.findOne({
-  //   accountnumber: toacc,
-  // })
-  //   .then((foundcustomerto) => {
-  //     const y = foundcustomerto.amount;
-
-  //     foundcustomerto.amount = parseInt(y) + parseInt(amountacc);
-  //     foundcustomerto.save();
-  //   })
-  //   .catch((e) => {
-  //     res.redirect("/");
-  //   });
-
-  // res.redirect("/transactions");
 });
 
 app.get("/mobile_login", (req, res) => {
@@ -321,7 +286,7 @@ app.get("/mobile_login", (req, res) => {
     function (err, foundcust) {
       if (foundcust) {
         if (foundcust.password === password) {
-          return res.status(200).send("login successful");
+          return res.status(200).send();
         } else {
           return res.status(401).send("login failed");
         }
@@ -331,16 +296,24 @@ app.get("/mobile_login", (req, res) => {
 });
 app.get("/confirm_mobile_payment", async (req, res) => {
   const { username, password, code } = req.query;
-  console.log(username, password, code);
   const user = await User.findOne({ username });
   if (user) {
     if (user.password === password && user.codeForPayment === code) {
       user.balance = user.balance - user.amountInProgress;
-      user.amountInProgress = 0;
       user.paymentInProgress = false;
+      const reciever = await User.findOne({ username: user.usernameInProgress });
+      reciever.balance = reciever.balance + user.amountInProgress;
+      const transaction = new Transaction({
+        from: username,
+        to: user.usernameInProgress,
+        amount: user.amountInProgress,
+        remarks: user.remarkInProgress,
+      });
+      await transaction.save();
+      user.amountInProgress = 0;
       user.usernameInProgress = "";
+      reciever.save();
       user.save();
-
       return res.status(200).send("payment successful");
     } else {
       console.log("failed");
@@ -358,7 +331,8 @@ app.get("/cancel_mobile_payment", async (req, res) => {
       user.amountInProgress = 0;
       user.paymentInProgress = false;
       user.usernameInProgress = "";
-      user.save();
+      await user.save();
+
       return res.status(200).send("payment cancelled Successfully");
     } else {
       console.log("failed");

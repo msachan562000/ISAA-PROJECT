@@ -11,12 +11,21 @@ var UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  amountInProgress: Number,
-  usernameInProgress: String,
-  codeForPayment: String,
-  remarkInProgress: String,
+  amountInProgress: { type: Number, default: 0 },
+  usernameInProgress: { type: String, default: "" },
+  codeForPayment: {
+    type: String,
+    default: "",
+  },
+  remarkInProgress: {
+    type: String,
+    default: "ISAA-PROJECT",
+  },
   // paymentProgrssTimeout
-  balance: Number,
+  balance: {
+    type: Number,
+    default: 0,
+  },
 });
 UserSchema.plugin(passportlocalmongoose);
 module.exports = mongoose.model("User", UserSchema);
