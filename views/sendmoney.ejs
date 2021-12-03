@@ -21,7 +21,7 @@
       <select class="form-control" name="from" id="from" required>
         <option value="" selected disabled>From Account</option>
         <%Bank.forEach(function(customer){%>
-        <option name="<%-customer.accountnumber%>"><%-customer.accountnumber%> </option>
+        <option name="<%-customer%>"><%-customer%> </option>
         <%});%>
       </select>
       <br>
@@ -30,7 +30,7 @@
       <select class="form-control" name="to" id="to" required>
         <option name="" selected disabled>To Account</option>
         <%Bank.forEach(function(customer){%>
-        <option name="<%-customer.accountnumber%>"><%-customer.accountnumber%> </option>
+        <option name="<%-customer%>"><%-customer%> </option>
         <%});%>
       </select>
       <br>

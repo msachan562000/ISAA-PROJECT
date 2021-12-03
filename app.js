@@ -244,9 +244,9 @@ app.post("/addnewcustomer", function (req, res) {
 // });
 
 app.get("/sendmoney", function (req, res) {
-  Bank.find({}, function (err, foundcust) {
+  User.find({}, function (err, foundcust) {
     res.render("sendmoney", {
-      Bank: foundcust,
+      Bank: foundcust.map((cust) => cust.username),
     });
   });
 });
@@ -321,7 +321,7 @@ app.get("/mobile_login", (req, res) => {
     }
   );
 });
-app.get("confirm_mobile_payment", async (req, res) => {
+app.get("/confirm_mobile_payment", async (req, res) => {
   const { username, password, code } = req.query;
   console.log(username, password, code);
   const user = await User.findOne({ username });
@@ -341,7 +341,7 @@ app.get("confirm_mobile_payment", async (req, res) => {
   } else return res.status(401).send("Transaction Failed");
 });
 
-app.get("cancel_mobile_payment", async (req, res) => {
+app.get("/cancel_mobile_payment", async (req, res) => {
   const { username, password } = req.query;
   console.log(username, password);
   const user = await User.findOne({ username });
