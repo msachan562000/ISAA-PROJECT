@@ -28,7 +28,6 @@ app.use(
 );
 
 app.use(express.static(__dirname + "/public"));
-
 mongoose.connect(
   "mongodb+srv://admin-yash:Tanishq562000@cluster0.7ouhp.mongodb.net/bankdb?retryWrites=true&w=majority",
   {
@@ -322,9 +321,8 @@ app.get("/mobile_login", (req, res) => {
     }
   );
 });
-
-app.post("mobile_complete", (req, res) => {
-  const { username, password, code } = req.body;
+app.get("mobile_complete", (req, res) => {
+  const { username, password, code } = req.query;
 });
 
 app.listen(process.env.PORT || 3000, function () {
