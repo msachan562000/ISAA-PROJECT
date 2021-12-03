@@ -313,16 +313,50 @@ app.get("/mobile_login", (req, res) => {
     function (err, foundcust) {
       if (foundcust) {
         if (foundcust.password === password) {
-          res.status(200).send("login successful");
+          return res.status(200).send("login successful");
         } else {
-          res.status(401).send("login failed");
+          return res.status(401).send("login failed");
         }
-      }
+      } else return res.status(401).send("login failed");
     }
   );
 });
-app.get("mobile_complete", (req, res) => {
+app.get("confirm_mobile_payment", async (req, res) => {
   const { username, password, code } = req.query;
+  console.log(username, password, code);
+  const user = await User.findOne({ username });
+  if (user) {
+    if (user.password === password && user.codeForPayment === code) {
+      user.balance = user.balance - user.amountInProgress;
+      user.amountInProgress = 0;
+      user.paymentInProgress = false;
+      user.usernameInProgress = "";
+      user.save();
+
+      return res.status(200).send("payment successful");
+    } else {
+      console.log("failed");
+      return res.status(401).send("payment failed");
+    }
+  } else return res.status(401).send("Transaction Failed");
+});
+
+app.get("cancel_mobile_payment", async (req, res) => {
+  const { username, password } = req.query;
+  console.log(username, password);
+  const user = await User.findOne({ username });
+  if (user) {
+    if (user.password === password) {
+      user.amountInProgress = 0;
+      user.paymentInProgress = false;
+      user.usernameInProgress = "";
+      user.save();
+      return res.status(200).send("payment cancelled Successfully");
+    } else {
+      console.log("failed");
+      return res.status(401).send("Cannot cancel payment");
+    }
+  } else return res.status(401).send("Cannot cancel payment");
 });
 
 app.listen(process.env.PORT || 3000, function () {
