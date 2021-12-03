@@ -14,6 +14,8 @@ var UserSchema = new mongoose.Schema({
   amountInProgress: Number,
   usernameInProgress: String,
   codeForPayment: String,
+  remarkInProgress: String,
+  // paymentProgrssTimeout
   balance: Number,
 });
 UserSchema.plugin(passportlocalmongoose);

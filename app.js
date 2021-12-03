@@ -6,6 +6,7 @@ const _ = require("lodash");
 const alert = require("alert");
 const qr = require("qrcode");
 const app = express();
+const cuid = require("cuid");
 var passport = require("passport"),
   LocalStrategy = require("passport-local"),
   passportLocalMongoose = require("passport-local-mongoose"),
@@ -244,6 +245,7 @@ app.post("/addnewcustomer", function (req, res) {
 // });
 
 app.get("/sendmoney", function (req, res) {
+  console.log(req.session);
   User.find({}, function (err, foundcust) {
     res.render("sendmoney", {
       Bank: foundcust.map((cust) => cust.username),
@@ -251,13 +253,11 @@ app.get("/sendmoney", function (req, res) {
   });
 });
 
-app.post("/sendmoney", function (req, res) {
+app.post("/sendmoney", async function (req, res) {
   const fromacc = req.body.from;
   const toacc = req.body.to;
-
   const remarksacc = _.toUpper(req.body.remarks);
   const amountacc = req.body.amount;
-  // console.log(fromacc);
   const transaction = new Transaction({
     from: fromacc,
     to: toacc,
@@ -265,43 +265,51 @@ app.post("/sendmoney", function (req, res) {
     remarks: remarksacc,
   });
 
-  Bank.findOne({
-    accountnumber: fromacc,
-  })
-    .then((foundcustomer) => {
-      const x = foundcustomer.amount;
+  const fromUser = await User.findOne({
+    username: fromacc,
+  });
+  console.log(fromUser);
+  fromUser.amountInProgress = amountacc;
+  fromUser.usernameInProgress = toacc;
+  fromUser.paymentInProgress = true;
+  fromUser.codeForPayment = cuid.slug();
+  fromUser.remarkInProgress = remarksacc;
+  fromUser.save();
+  res.redirect("/connecttophone");
+  //   .then((foundcustomer) => {
+  //     const x = foundcustomer.amount;
 
-      if (fromacc === toacc) {
-        alert("From and To accounts cannot be same");
-        res.redirect("/sendmoney");
-      } else if (amountacc > x || x <= 0) {
-        alert(
-          "Available Balance in your account is less than the amount being tranferred.Kindy fill your account with sufficient funds."
-        );
-        res.redirect("/");
-      } else {
-        transaction.save();
-      }
-      foundcustomer.amount = x - amountacc;
-      foundcustomer.save();
-    })
-    .catch((e) => {
-      res.redirect("/");
-    });
-  Bank.findOne({
-    accountnumber: toacc,
-  })
-    .then((foundcustomerto) => {
-      const y = foundcustomerto.amount;
+  //     if (fromacc === toacc) {
+  //       // alert("From and To accounts cannot be same");
+  //       return res.redirect("/sendmoney");
+  //     } else if (amountacc > x || x <= 0) {
+  //       alert(
+  //         "Available Balance in your account is less than the amount being tranferred.Kindy fill your account with sufficient funds."
+  //       );
+  //       res.redirect("/");
+  //     } else {
+  //       transaction.save();
+  //     }
+  //     foundcustomer.amount = x - amountacc;
+  //     foundcustomer.save();
+  //   })
+  //   .catch((e) => {
+  //     res.redirect("/");
+  //   });
+  // Bank.findOne({
+  //   accountnumber: toacc,
+  // })
+  //   .then((foundcustomerto) => {
+  //     const y = foundcustomerto.amount;
 
-      foundcustomerto.amount = parseInt(y) + parseInt(amountacc);
-      foundcustomerto.save();
-    })
-    .catch((e) => {
-      res.redirect("/");
-    });
+  //     foundcustomerto.amount = parseInt(y) + parseInt(amountacc);
+  //     foundcustomerto.save();
+  //   })
+  //   .catch((e) => {
+  //     res.redirect("/");
+  //   });
 
-  res.redirect("/transactions");
+  // res.redirect("/transactions");
 });
 
 app.get("/mobile_login", (req, res) => {
