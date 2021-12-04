@@ -150,47 +150,15 @@ app.get("/transactions", isLoggedIn, function (req, res) {
     }
   );
 });
-// app.get("/connecttophone", isLoggedIn, function (req, res) {
-//   var username = req.params.username;
-//   var password = req.params.password;
-//   var url = username + "password:" + password;
-//   qr.toDataURL(url, (err, src) => {
-//     if (err) res.send("Error occured");
-
-//     // Let us return the QR code image as our response and set it to be the source used in the webpage
-//     res.render("connecttophone", { src });
-
-//     // res.render("connecttophone");
-//   });
-// });
 
 app.get("/", function (req, res) {
   res.render("index");
-});
-app.get("/customers", function (req, res) {
-  // Bank.find({}, function(err, foundcust) {
-  //   res.render("customers", {
-  //     Bank: foundcust
-  //   });
-  // })
-  res.send(a, b, c);
 });
 app.get("/home", isLoggedIn, function (req, res) {
   res.render("home");
 });
 
 //qr code generator
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 app.get("/connecttophone", isLoggedIn, async (req, res) => {
   var user = await User.findOne({ username: req.session.passport.user });
   if (!user.paymentInProgress) return res.send("No Active Payment");
@@ -205,54 +173,6 @@ app.get("/connecttophone", isLoggedIn, async (req, res) => {
     res.render("connecttophone", { src });
   });
 });
-
-// app.get("/addnewcustomer", function (req, res) {
-//   res.render("addnewcustomer");
-// });
-// app.post("/addnewcustomer", function (req, res) {
-//   const fname = _.toUpper(req.body.fname);
-//   const lname = _.toUpper(req.body.lname);
-//   const age = req.body.age;
-//   const ifsc = _.toUpper(req.body.ifsc);
-//   const balance = req.body.balance;
-//   const email = req.body.email;
-//   const account = req.body.account;
-
-//   const customer = new Bank({
-//     firstname: fname,
-//     lastname: lname,
-//     age: age,
-//     email: email,
-//     accountnumber: account,
-//     ifsccode: ifsc,
-//     amount: balance,
-//   });
-//   Bank.findOne(
-//     {
-//       accountnumber: account,
-//     },
-//     function (err, foundcust) {
-//       if (!foundcust) {
-//         customer.save();
-//         res.redirect("/");
-//       } else {
-//         console.log(err);
-//       }
-//       //res.redirect("/");
-//     }
-//   );
-// });
-
-// app.get("/transactions", function(req, res) {
-
-//   Transaction.find({}, function(err, foundtrans) {
-//     res.render("transactions", {
-//       Transaction: foundtrans,
-
-//     });
-//   });
-
-// });
 
 app.get("/sendmoney", isLoggedIn, function (req, res) {
   const user = req.session.passport.user;
@@ -352,6 +272,4 @@ app.get("/cancel_mobile_payment", async (req, res) => {
   } else return res.status(401).send("Cannot cancel payment");
 });
 
-app.listen(process.env.PORT || 3000, function () {
-  console.log("server is on port 3000");
-});
+app.listen(process.env.PORT || 3000);
