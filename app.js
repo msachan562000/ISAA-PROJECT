@@ -7,6 +7,10 @@ const alert = require("alert");
 const qr = require("qrcode");
 const app = express();
 const cuid = require("cuid");
+var formatISO = require("date-fns/formatISO");
+var addMinutes = require("date-fns/addMinutes");
+var compareAsc = require("date-fns/compareAsc");
+var parseISO = require("date-fns/parseISO");
 var passport = require("passport"),
   LocalStrategy = require("passport-local"),
   passportLocalMongoose = require("passport-local-mongoose"),
@@ -270,6 +274,7 @@ app.post("/sendmoney", isLoggedIn, async function (req, res) {
   } else if (!req.body.to) return res.send("Select A Recipient");
   fromUser.amountInProgress = amountacc;
   fromUser.usernameInProgress = toacc;
+  fromUser.paymentProgrssTimeout = formatISO(addMinutes(new Date(), 10));
   fromUser.paymentInProgress = true;
   fromUser.codeForPayment = cuid.slug();
   fromUser.remarkInProgress = remarksacc;
@@ -299,6 +304,8 @@ app.get("/confirm_mobile_payment", async (req, res) => {
   const user = await User.findOne({ username });
   if (user) {
     if (user.password === password && user.codeForPayment === code) {
+      if (compareAsc(new Date(), new Date(user.paymentProgrssTimeout)) >= 0)
+        return res.status(401).send("Payment Timeout");
       user.balance = user.balance - user.amountInProgress;
       user.paymentInProgress = false;
       const reciever = await User.findOne({ username: user.usernameInProgress });

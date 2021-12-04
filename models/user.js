@@ -21,7 +21,7 @@ var UserSchema = new mongoose.Schema({
     type: String,
     default: "ISAA-PROJECT",
   },
-  // paymentProgrssTimeout
+  paymentProgrssTimeout: { type: String },
   balance: {
     type: Number,
     default: 0,
