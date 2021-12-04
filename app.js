@@ -141,8 +141,11 @@ app.get("/transactions", isLoggedIn, function (req, res) {
       $or: [{ from: usern }, { to: usern }],
     },
     function (err, foundtrans) {
-      res.render("transactions", {
-        Transaction: foundtrans,
+      User.findOne({ username: usern }, function (err, foundcust) {
+        res.render("transactions", {
+          Transaction: foundtrans,
+          balance: foundcust.balance,
+        });
       });
     }
   );
@@ -257,6 +260,7 @@ app.get("/sendmoney", isLoggedIn, function (req, res) {
     res.render("sendmoney", {
       Bank: foundcust.map((cust) => cust.username).filter((cust) => cust !== user),
       currentUser: user,
+      balance: foundcust.find((cust) => cust.username === user).balance,
     });
   });
 });
